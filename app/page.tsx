@@ -1,40 +1,29 @@
+'use client';
+import { useEffect, useMemo, useState } from 'react';
+import { getProgress } from '@/lib/storage';
+import { computeDailyCounts, computeStreak } from '@/utils/progress';
+import dynamic from 'next/dynamic';
+const ProgressAreaChart = dynamic(() => import('@/components/Charts/ProgressAreaChart'), { ssr: false });
 
-'use client'
-import Link from 'next/link'
-import ProgressBar from '@/components/ui/ProgressBar'
-import { useBooks } from '@/lib/useBooks'
-
-export default function Page(){
-  const { books } = useBooks()
-  const total = books.reduce((a,b)=>a+(b.sections?.length||0),0)
-  const done = books.reduce((a,b)=>a+(b.sections?.filter(s=>s.done).length||0),0)
-  const pct = total? done/total : 0
+export default function Page() {
+  const [tick, setTick] = useState(0);
+  useEffect(() => { const onFocus = () => setTick(t => t + 1); window.addEventListener('focus', onFocus); return () => window.removeEventListener('focus', onFocus); }, []);
+  const entries = useMemo(() => getProgress(), [tick]);
+  const total = entries.length; const done = entries.filter(e => e.done).length; const streak = computeStreak(entries);
+  const series = computeDailyCounts(entries, 30);
 
   return (
-    <main className="space-y-6">
-      <section className="card">
-        <div className="mb-2 flex items-center justify-between">
-          <h2 className="text-xl font-semibold">התמונה הכללית</h2>
-          <span className="text-sm opacity-80">{Math.round(pct*100)}%</span>
-        </div>
-        <ProgressBar value={pct} />
-      </section>
-
-      {/* Main categories */}
-      <section className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-        <Link href="/books/gemara" className="card transition hover:opacity-90">
-          <h3 className="mb-2 text-lg font-bold">תלמוד בבלי</h3>
-          <p className="opacity-70 text-sm">סדרים → מסכתות → דפים</p>
-        </Link>
-        <Link href={`/study/${encodeURIComponent('mb')}`} className="card transition hover:opacity-90">
-          <h3 className="mb-2 text-lg font-bold">משנה ברורה</h3>
-          <p className="opacity-70 text-sm">סימנים (א׳–תרפ״ז) → סעיפים</p>
-        </Link>
-        <Link href={`/study/${encodeURIComponent('musar:mesilat-yasharim')}`} className="card transition hover:opacity-90">
-          <h3 className="mb-2 text-lg font-bold">ספרי מוסר</h3>
-          <p className="opacity-70 text-sm">מסילת ישרים (ברירת מחדל) → פרקים</p>
-        </Link>
-      </section>
+    <main className="max-w-3xl mx-auto p-4 space-y-6" dir="rtl">
+      <h1 className="text-2xl font-bold mb-2">לוח מחוונים</h1>
+      <div className="grid grid-cols-3 gap-3">
+        <div className="p-4 rounded-2xl border"><div className="text-sm text-black/60">סך יחידות</div><div className="text-2xl font-bold">{total}</div></div>
+        <div className="p-4 rounded-2xl border"><div className="text-sm text-black/60">הושלמו</div><div className="text-2xl font-bold">{done}</div></div>
+        <div className="p-4 rounded-2xl border"><div className="text-sm text-black/60">רצף נוכחי</div><div className="text-2xl font-bold">{streak.current} ימים</div></div>
+      </div>
+      <div className="p-4 rounded-2xl border">
+        <div className="mb-2 font-medium">פעילות 30 הימים האחרונים</div>
+        <ProgressAreaChart data={series} />
+      </div>
     </main>
-  )
+  );
 }

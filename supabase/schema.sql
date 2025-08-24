@@ -1,7 +1,3 @@
--- Enable extensions if needed
--- create extension if not exists "uuid-ossp";
-
--- Profiles
 create table if not exists public.profiles (
   id uuid primary key,
   email text unique,
@@ -10,7 +6,6 @@ create table if not exists public.profiles (
   updated_at timestamptz default now()
 );
 
--- Progress entries
 create table if not exists public.progress (
   id bigserial primary key,
   user_id uuid not null,
@@ -22,11 +17,9 @@ create table if not exists public.progress (
   unique (user_id, book_id, unit_id)
 );
 
--- RLS
 alter table public.profiles enable row level security;
 alter table public.progress enable row level security;
 
--- Authenticated users can only see their own rows
 drop policy if exists "profiles_own" on public.profiles;
 create policy "profiles_own" on public.profiles
   for all using (auth.uid() = id)
