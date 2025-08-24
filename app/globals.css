@@ -1,0 +1,16 @@
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+:root { --bg:255 255 255; --fg:17 24 39; --card:249 250 251; --accent:30 77 216; }
+:root[data-theme='dark'] { --bg:17 24 39; --fg:229 231 235; --card:31 41 55; --accent:255 166 0; }
+:root[data-theme='sepia'] { --bg:250 244 232; --fg:62 39 35; --card:244 236 220; --accent:120 85 45; }
+:root[data-theme='ocean'] { --bg:227 242 253; --fg:13 41 62; --card:209 233 252; --accent:2 119 189; }
+:root[data-theme='royal'] { --bg:245 243 255; --fg:37 20 62; --card:234 231 251; --accent:88 28 135; }
+html,body{height:100%} html{direction:rtl}
+body{background-color:rgb(var(--bg));color:rgb(var(--fg));font-family:system-ui,-apple-system,'Noto Sans Hebrew','Assistant',Segoe UI,Roboto,Helvetica,Arial}
+.card{background-color:rgb(var(--card)); @apply rounded-xl p-4 shadow-sm;}
+.btn{ @apply inline-flex items-center justify-center rounded-lg px-4 py-2 font-medium; background-color: rgb(var(--accent) / 0.95); color:white;}
+.btn-ghost{ @apply inline-flex items-center justify-center rounded-lg px-3 py-2; color:rgb(var(--fg)); background:transparent;}
+.progress{ @apply h-2 w-full overflow-hidden rounded-full bg-gray-300;}
+.progress>span{ @apply block h-full bg-[rgb(var(--accent))];}
