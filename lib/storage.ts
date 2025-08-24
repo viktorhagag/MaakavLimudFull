@@ -1,3 +1,4 @@
+
 export const SCHEMA_VERSION = 2;
 
 export type ProgressEntry = {
